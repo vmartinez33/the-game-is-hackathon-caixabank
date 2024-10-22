@@ -4,13 +4,14 @@ Category   ➡️   Software
 
 Subcategory   ➡️   Python Backend
 
-Difficulty   ➡️   Mid
+Difficulty   ➡️   Hard
 
 ---
 
 ## 🌐 Background
 
-
+You have just joined CaixaBank Tech, the technology arm of the CaixaBank group, to work on an exciting and innovative project. The team is currently composed of only one architect, who has brought you on board specifically to design the backend for a new extension of the CaixaBankNow and Imagin apps. This extension will allow clients to manage their transactions quickly, focusing on the stock market, while also integrating a robo-advisor system that will enable automatic stock trading.
+Before the frontend development team gets involved, your task is to validate the feasibility of building this backend infrastructure. The aim is to ensure the system can support seamless transaction management and automate stock trading operations. Your expertise will be critical in shaping the core backend architecture that will serve as the foundation for future development.
 
 ## 📂 Repository Structure
 
