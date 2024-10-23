@@ -553,6 +553,8 @@ This task ensures that the application handles errors gracefully and provides ap
     Invalid email: nuwenuwe
     ```
 
+- **Insufficient money in account**: Any transaction for which there are insufficient funds should trigger the text: **Insufficient balance** with a status code 400.
+
 ### Task 8: Subscriptions and Trading Bot
 
 This task focuses on advanced features such as creating automatic subscriptions and enabling a trading bot to handle investments.
