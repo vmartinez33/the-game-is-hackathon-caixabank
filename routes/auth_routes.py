@@ -51,7 +51,6 @@ def verify_otp():
     if not otp_record or otp_record.is_expired():
         return jsonify("Invalid OTP"), 400
 
-    # Generar el token de restablecimiento de contraseña
     password_reset_token = str(uuid.uuid4())
     user.password_reset_token = password_reset_token
     user.password_reset_token_expiration = datetime.now(timezone.utc) + timedelta(minutes=15)
