@@ -1,5 +1,6 @@
 """ /api/auth routes """
 from datetime import datetime, timedelta, timezone
+import uuid
 from flask import Blueprint, jsonify, request
 from flask_mail import Message
 
@@ -37,6 +38,28 @@ def send_otp():
 @auth_bp.route('/password-reset/verify-otp', methods=['POST'])
 def verify_otp():
     """ Verifies the OTP and returns a reset token """
+    data = request.get_json()
+    identifier = data.get('identifier')
+    otp_code = data.get('otp')
+
+    user = User.query.filter((User.email == identifier) | (User.accountNumber == identifier)).first()
+    if not user:
+        return jsonify(f"User not found for the given identifier: {identifier}"), 400
+
+    otp_record = OTP.query.filter_by(user_id=user.id, otp_code=otp_code).first()
+
+    if not otp_record or otp_record.is_expired():
+        return jsonify("Invalid OTP"), 400
+
+    # Generar el token de restablecimiento de contraseña
+    password_reset_token = str(uuid.uuid4())
+    user.password_reset_token = password_reset_token
+    user.password_reset_token_expiration = datetime.now(timezone.utc) + timedelta(minutes=15)
+
+    db.session.delete(otp_record)
+    db.session.commit()
+
+    return jsonify({"passwordResetToken": password_reset_token})
 
 
 @auth_bp.route('/password-reset', methods=['POST'])

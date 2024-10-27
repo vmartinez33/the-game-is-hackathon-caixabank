@@ -1,10 +1,10 @@
 """ Models file """
-from datetime import datetime, timezone
 import uuid
+from datetime import datetime, timezone
 
-from flask_sqlalchemy import SQLAlchemy
+import pytz
 from flask_bcrypt import Bcrypt
-
+from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -25,6 +25,8 @@ class User(db.Model):
         default=lambda: str(uuid.uuid4())
     )
     balance = db.Column(db.Float, nullable=False, default=0.0)
+    password_reset_token = db.Column(db.String(256), nullable=True)
+    password_reset_token_expiration = db.Column(db.DateTime, nullable=True)
 
     def set_password(self, password):
         """ hash and set user password """
@@ -50,4 +52,4 @@ class OTP(db.Model):
 
     def is_expired(self):
         """ Check if OTP code is expired """
-        return datetime.now(timezone.utc) > self.expires_at
+        return datetime.now(timezone.utc) > pytz.UTC.localize(self.expires_at)
