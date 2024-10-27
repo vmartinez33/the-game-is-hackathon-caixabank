@@ -18,11 +18,12 @@ class User(db.Model):
     password = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     address = db.Column(db.String(250), nullable=False)
-    phoneNumber = db.Column(db.String(20), nullable=False)
+    phoneNumber = db.Column(db.String(20), unique=True, nullable=False)
     accountNumber = db.Column(
         db.String(36), unique=True, nullable=False,
         default=lambda: str(uuid.uuid4())
     )
+    balance = db.Column(db.Float, nullable=False, default=0.0)
 
     def set_password(self, password):
         """ hash and set user password """
