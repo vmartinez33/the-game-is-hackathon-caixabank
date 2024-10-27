@@ -25,7 +25,7 @@ def register_user():
         return jsonify('All fields are required'), 400
 
     if not validate_email(email):
-        return jsonify('Invalid email format'), 400
+        return jsonify(f'Invalid email: {email}'), 400
 
     existing_user = get_existing_user(email, phone_number)
     if existing_user:
