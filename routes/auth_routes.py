@@ -65,3 +65,25 @@ def verify_otp():
 @auth_bp.route('/password-reset', methods=['POST'])
 def password_reset():
     """ Resets the user's password """
+    data = request.get_json()
+    identifier = data.get('identifier')
+    reset_token = data.get('resetToken')
+    new_password = data.get('newPassword')
+
+    if not identifier or not reset_token or not new_password:
+        return jsonify({"message": "Missing required fields"}), 400
+
+    user = User.query.filter((User.email == identifier) | (User.accountNumber == identifier)).first()
+    if not user:
+        return jsonify(f"User not found for the given identifier: {identifier}"), 400
+
+    if user.password_reset_token is None or user.password_reset_token != reset_token or user.is_password_token_expired():
+        return jsonify("Invalid reset token"), 400
+
+    user.set_password(new_password)
+    user.password_reset_token = None
+    user.password_reset_token_expiration = None
+
+    db.session.commit()
+
+    return jsonify({"message": "Password reset successfully"}), 200

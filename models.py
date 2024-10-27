@@ -36,6 +36,10 @@ class User(db.Model):
         """ check hashed password """
         return bcrypt.check_password_hash(self.password, password)
 
+    def is_password_token_expired(self):
+        """ Check if password token is expired """
+        return datetime.now(timezone.utc) > pytz.UTC.localize(self.password_reset_token_expiration)
+
     def __repr__(self):
         return f'<User {self.name}>'
 
