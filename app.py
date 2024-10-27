@@ -25,3 +25,7 @@ jwt.init_app(app)
 def hello_world():
     """ hello_world() """
     return "<p>Hello, World!</p>"
+
+
+if __name__ == "__main__":
+    app.run(host=app.config['RUN_HOST'], port=app.config['RUN_PORT'])
