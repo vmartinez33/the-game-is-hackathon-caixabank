@@ -27,6 +27,7 @@ class User(db.Model):
     balance = db.Column(db.Float, nullable=False, default=0.0)
     password_reset_token = db.Column(db.String(256), nullable=True)
     password_reset_token_expiration = db.Column(db.DateTime, nullable=True)
+    pin = db.Column(db.String(4), nullable=True)
 
     def set_password(self, password):
         """ hash and set user password """
