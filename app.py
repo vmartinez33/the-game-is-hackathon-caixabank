@@ -4,8 +4,7 @@ from flask_migrate import Migrate
 
 from api import api_bp
 from config import Config
-from models import db
-from bcrypt import bcrypt
+from models import db, bcrypt
 
 
 app = Flask(__name__)
