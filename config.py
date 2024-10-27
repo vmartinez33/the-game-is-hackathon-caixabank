@@ -16,3 +16,6 @@ class Config:
     RUN_HOST = os.getenv('FLASK_RUN_HOST', '127.0.0.1')
     RUN_PORT = int(os.getenv('FLASK_RUN_PORT', '5000'))
     ENV = os.getenv('FLASK_ENV', 'development')
+
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', "sqlite:///app.db")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
