@@ -26,3 +26,26 @@ def get_existing_user(email, phone_number):
 def generate_otp():
     """ Generate 6 digit OTP code """
     return ''.join([str(random.randint(0, 9)) for _ in range(6)])
+
+
+def validate_password(password):
+    """ Validate password """
+    if re.search(r'\s', password):
+        return "Password cannot contain whitespace"
+
+    if not re.search(r'[A-Z]', password):
+        return "Password must contain at least one uppercase letter"
+
+    if not re.search(r'\d', password):
+        return "Password must contain at least one digit and one special character"
+
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return "Password must contain at least one special character"
+
+    if len(password) < 8:
+        return "Password must be at least 8 characters long"
+
+    if len(password) >= 128:
+        return "Password must be less than 128 characters long"
+
+    return None

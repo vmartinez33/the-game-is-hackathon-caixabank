@@ -4,7 +4,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 
 from models import User
 from services.user_service import create_user
-from utils import is_field_empty, validate_email, get_existing_user
+from utils import is_field_empty, validate_email, get_existing_user, validate_password
 from jwt_token import blocklist
 
 users_bp = Blueprint('users', __name__)
@@ -33,6 +33,10 @@ def register_user():
             return jsonify('Email already exists'), 400
         if existing_user.phoneNumber == phone_number:
             return jsonify('Phone number already exists'), 400
+
+    validation_error = validate_password(password)
+    if validation_error:
+        return jsonify(validation_error), 400
 
     user = create_user(name, email, password, address, phone_number)
 
