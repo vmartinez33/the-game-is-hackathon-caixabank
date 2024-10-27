@@ -58,3 +58,20 @@ class OTP(db.Model):
     def is_expired(self):
         """ Check if OTP code is expired """
         return datetime.now(timezone.utc) > pytz.UTC.localize(self.expires_at)
+
+
+class Transaction(db.Model):
+    """ Transaction model """
+    __tablename__ = 'transactions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    amount = db.Column(db.Float, nullable=False)
+    transaction_type = db.Column(db.String(50), nullable=False)
+    transaction_date = db.Column(db.TIMESTAMP, nullable=False)
+    source_account_number = db.Column(db.String(36), nullable=False)
+    target_account_number = db.Column(db.String(36), nullable=True)
+
+    def __repr__(self):
+        return f"<Transaction(id={self.id}, amount={self.amount}, transaction_type='{self.transaction_type}', \
+            transaction_date='{self.transaction_date}', \
+            source_account_number='{self.source_account_number}', target_account_number='{self.target_account_number}')>"
