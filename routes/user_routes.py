@@ -1,6 +1,8 @@
 """ /api/users routes """
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import create_access_token
 
+from models import User
 from services.user_service import create_user
 from utils import is_field_empty, validate_email, get_existing_user
 
@@ -43,3 +45,25 @@ def register_user():
     }
 
     return jsonify(response), 200
+
+
+@users_bp.route('/login', methods=['POST'])
+def login_user():
+    """ Logs in the user and returns a JWT token """
+    data = request.get_json()
+    identifier = data.get('identifier')
+    password = data.get('password')
+
+    # Buscar usuario por email o account number
+    user = User.query.filter((User.email == identifier) | (User.accountNumber == identifier)).first()
+
+    if user is None:
+        return jsonify(f'User not found for the given identifier: {identifier}'), 400
+
+    if not user.check_password(password):
+        return jsonify('Bad credentials'), 401
+
+    # Generar el token JWT
+    token = create_access_token(identity=user.id)
+
+    return jsonify(token=token), 200
