@@ -5,7 +5,7 @@ from flask import Blueprint, jsonify, request
 from flask_mail import Message
 
 from models import db, OTP, User
-from utils import generate_otp
+from utils import generate_otp, validate_password
 from mail import mail
 
 
@@ -78,6 +78,10 @@ def password_reset():
 
     if user.password_reset_token is None or user.password_reset_token != reset_token or user.is_password_token_expired():
         return jsonify("Invalid reset token"), 400
+
+    validation_error = validate_password(new_password)
+    if validation_error:
+        return jsonify(validation_error), 400
 
     user.set_password(new_password)
     user.password_reset_token = None
