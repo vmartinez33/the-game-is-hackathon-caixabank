@@ -1,10 +1,11 @@
 """ /api/users routes """
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 
 from models import User
 from services.user_service import create_user
 from utils import is_field_empty, validate_email, get_existing_user
+from jwt_token import blocklist
 
 users_bp = Blueprint('users', __name__)
 
@@ -67,3 +68,12 @@ def login_user():
     token = create_access_token(identity=user.id)
 
     return jsonify(token=token), 200
+
+
+@users_bp.route('/logout', methods=['GET'])
+@jwt_required()
+def logout():
+    """ Logs out the user and invalidates the JWT token """
+    jti = get_jwt()['jti']
+    blocklist.add(jti)
+    return jsonify({'message': 'Logged out successfully'}), 200

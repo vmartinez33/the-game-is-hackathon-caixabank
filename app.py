@@ -1,11 +1,11 @@
 """ app.py """
 from flask import Flask
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager
 
 from api import api_bp
 from config import Config
 from models import db, bcrypt
+from jwt_token import jwt
 
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ migrate = Migrate(app, db)
 
 bcrypt.init_app(app)
 
-jwt = JWTManager(app)
+jwt.init_app(app)
 
 
 @app.route("/")
