@@ -1,4 +1,5 @@
 """ Models file """
+from datetime import datetime, timezone
 import uuid
 
 from flask_sqlalchemy import SQLAlchemy
@@ -35,3 +36,18 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.name}>'
+
+
+class OTP(db.Model):
+    """ OTP model """
+    __tablename__ = 'otp_codes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    otp_code = db.Column(db.String(6), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    expires_at = db.Column(db.DateTime, nullable=False)
+
+    def is_expired(self):
+        """ Check if OTP code is expired """
+        return datetime.now(timezone.utc) > self.expires_at

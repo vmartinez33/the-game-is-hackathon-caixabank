@@ -21,3 +21,11 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', None)
+
+    MAIL_SERVER = os.getenv('MAIL_SERVER', "localhost")
+    MAIL_PORT = os.getenv('MAIL_PORT', "1025")
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = False
+    MAIL_USERNAME = None
+    MAIL_PASSWORD = None
+    MAIL_DEFAULT_SENDER = 'noreply@bankingapp.com'

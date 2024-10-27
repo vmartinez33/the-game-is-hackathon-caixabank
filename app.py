@@ -6,6 +6,7 @@ from api import api_bp
 from config import Config
 from models import db, bcrypt
 from jwt_token import jwt
+from mail import mail
 
 
 app = Flask(__name__)
@@ -20,6 +21,7 @@ bcrypt.init_app(app)
 
 jwt.init_app(app)
 
+mail = mail.init_app(app)
 
 @app.route("/")
 def hello_world():

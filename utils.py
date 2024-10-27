@@ -1,4 +1,5 @@
 """ utils functions """
+import random
 import re
 
 from models import User
@@ -20,3 +21,8 @@ def get_existing_user(email, phone_number):
     """ Get user with same email or phone_number """
     existing_user = User.query.filter((User.email == email) | (User.phoneNumber == phone_number)).first()
     return existing_user
+
+
+def generate_otp():
+    """ Generate 6 digit OTP code """
+    return ''.join([str(random.randint(0, 9)) for _ in range(6)])
