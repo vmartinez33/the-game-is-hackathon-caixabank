@@ -49,3 +49,11 @@ def validate_password(password):
         return "Password must be less than 128 characters long"
 
     return None
+
+
+def is_asset_valid(asset_symbol):
+    """ Checks if an asset symbol is valid """
+    valid_assets = ("AAPL", "GOOGL", "TSLA", "AMZN", "MSFT", "NFLX", "FB", "BTC", "ETH", "XRP", "GOLD", "SILVER")
+    if asset_symbol in valid_assets:
+        return True
+    return False
