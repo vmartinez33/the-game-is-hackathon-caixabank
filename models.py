@@ -29,6 +29,9 @@ class User(db.Model):
     password_reset_token_expiration = db.Column(db.DateTime, nullable=True)
     pin = db.Column(db.String(4), nullable=True)
 
+    transactions = db.relationship("Transaction", back_populates="user")
+    assets = db.relationship("UserAsset", back_populates="user")
+
     def set_password(self, password):
         """ hash and set user password """
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -70,8 +73,22 @@ class Transaction(db.Model):
     transaction_date = db.Column(db.TIMESTAMP, nullable=False)
     source_account_number = db.Column(db.String(36), nullable=False)
     target_account_number = db.Column(db.String(36), nullable=True)
+    asset_symbol = db.Column(db.String(256), nullable=True)
+    asset_price_at_purchase = db.Column(db.Float, nullable=True)
+    asset_quantity = db.Column(db.Float, nullable=True)
 
     def __repr__(self):
         return f"<Transaction(id={self.id}, amount={self.amount}, transaction_type='{self.transaction_type}', \
             transaction_date='{self.transaction_date}', \
             source_account_number='{self.source_account_number}', target_account_number='{self.target_account_number}')>"
+
+
+class UserAsset(db.Model):
+    """ UserAsset model """
+    __tablename__ = "user_assets"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    asset_symbol = db.Column(db.String(256), nullable=False)
+    quantity = db.Column(db.Float, default=0)
+    avg_purchase_price = db.Column(db.Float, default=0)
