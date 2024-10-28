@@ -6,6 +6,7 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from mail import send_investment_purchase_email
 from models import Transaction, User, db
 from services.market_service import get_asset_prices, update_user_asset
+from services.user_service import calculate_net_worth
 from utils import is_asset_valid
 
 account_bp = Blueprint('account', __name__)
@@ -218,7 +219,7 @@ def buy_asset():
     update_user_asset(user, asset_symbol, quantity, asset_price)
     send_investment_purchase_email(user, asset_symbol, quantity, amount)
 
-    return jsonify({"msg": "Asset purchase successful"})
+    return jsonify("Asset purchase successful."), 200
 
 
 @account_bp.route('/sell-asset', methods=['POST'])
@@ -237,3 +238,9 @@ def get_user_assets():
 @jwt_required()
 def net_worth():
     """ Provide users with an overview of their net worth """
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+
+    data = calculate_net_worth(user)
+
+    return jsonify(data), 200
