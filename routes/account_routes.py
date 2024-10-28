@@ -3,7 +3,10 @@ from datetime import datetime, timezone
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
+from mail import send_investment_purchase_email
 from models import Transaction, User, db
+from services.market_service import get_asset_prices, update_user_asset
+from utils import is_asset_valid
 
 account_bp = Blueprint('account', __name__)
 
@@ -179,6 +182,43 @@ def get_transaction_history():
 @jwt_required()
 def buy_asset():
     """ Buys a specified asset for the user """
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+
+    data = request.json
+    asset_symbol = data.get("assetSymbol")
+    amount = data.get("amount")
+    pin = data.get("pin")
+
+    if user.pin != pin:
+        return jsonify("Invalid PIN"), 403
+
+    if not is_asset_valid(asset_symbol):
+        return jsonify("Asset not valid"), 400
+
+    asset_price = get_asset_prices(asset_symbol)
+    if not asset_price or user.balance < amount:
+        return jsonify("Internal error occurred while purchasing the asset."), 500
+
+    quantity = amount / asset_price
+
+    user.balance -= amount
+    transaction = Transaction(
+        source_account_number=user.accountNumber,
+        amount=amount,
+        transaction_type="ASSET_PURCHASE",
+        asset_symbol=asset_symbol,
+        asset_price_at_purchase=asset_price,
+        asset_quantity=quantity,
+        transaction_date=datetime.now(timezone.utc)
+    )
+    db.session.add(transaction)
+    db.session.commit()
+
+    update_user_asset(user, asset_symbol, quantity, asset_price)
+    send_investment_purchase_email(user, asset_symbol, quantity, amount)
+
+    return jsonify({"msg": "Asset purchase successful"})
 
 
 @account_bp.route('/sell-asset', methods=['POST'])

@@ -29,8 +29,8 @@ class User(db.Model):
     password_reset_token_expiration = db.Column(db.DateTime, nullable=True)
     pin = db.Column(db.String(4), nullable=True)
 
-    transactions = db.relationship("Transaction", back_populates="user")
-    assets = db.relationship("UserAsset", back_populates="user")
+    # transactions = db.relationship("Transaction", back_populates="user")
+    # assets = db.relationship("UserAsset", back_populates="user")
 
     def set_password(self, password):
         """ hash and set user password """

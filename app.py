@@ -25,6 +25,7 @@ jwt.init_app(app)
 
 mail = mail.init_app(app)
 
+
 @app.route("/")
 def hello_world():
     """ hello_world() """
