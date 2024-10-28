@@ -173,3 +173,27 @@ def get_transaction_history():
     } for transaction in transactions]
 
     return jsonify(transaction_list), 200
+
+
+@account_bp.route('/buy-asset', methods=['POST'])
+@jwt_required()
+def buy_asset():
+    """ Buys a specified asset for the user """
+
+
+@account_bp.route('/sell-asset', methods=['POST'])
+@jwt_required()
+def sell_asset():
+    """ Sells a specified asset for the user """
+
+
+@account_bp.route('/assets', methods=['GET'])
+@jwt_required()
+def get_user_assets():
+    """ User asset informational endpoint """
+
+
+@account_bp.route('/net-worth', methods=['GET'])
+@jwt_required()
+def net_worth():
+    """ Provide users with an overview of their net worth """
