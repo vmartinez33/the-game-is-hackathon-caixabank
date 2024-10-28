@@ -3,8 +3,8 @@ from datetime import datetime, timezone
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
-from mail import send_investment_purchase_email
-from models import Transaction, User, db
+from mail import send_investment_purchase_email, send_investment_sale_email
+from models import Transaction, User, UserAsset, db
 from services.market_service import get_asset_prices, update_user_asset
 from services.user_service import calculate_net_worth
 from utils import is_asset_valid
@@ -226,6 +226,48 @@ def buy_asset():
 @jwt_required()
 def sell_asset():
     """ Sells a specified asset for the user """
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+
+    data = request.json
+    asset_symbol = data.get("assetSymbol")
+    quantity = data.get("quantity")
+    pin = data.get("pin")
+
+    if user.pin != pin:
+        return jsonify("Invalid PIN"), 403
+
+    if not is_asset_valid(asset_symbol):
+        return jsonify("Asset not valid"), 400
+
+    current_price = get_asset_prices(asset_symbol)
+    user_asset = UserAsset.query.filter_by(user_id=user.id, asset_symbol=asset_symbol).first()
+    if not current_price or not user_asset or user_asset.quantity < quantity:
+        return jsonify("Internal error occurred while selling the asset."), 500
+
+    sale_amount = quantity * current_price
+    profit_loss = sale_amount - (user_asset.avg_purchase_price * quantity)
+    user.balance += sale_amount
+    user_asset.quantity -= quantity
+
+    if user_asset.quantity == 0:
+        db.session.delete(user_asset)
+
+    transaction = Transaction(
+        source_account_number=user.accountNumber,
+        amount=sale_amount,
+        transaction_type="ASSET_SELL",
+        asset_symbol=asset_symbol,
+        asset_price_at_purchase=current_price,
+        asset_quantity=quantity,
+        transaction_date=datetime.now(timezone.utc)
+    )
+    db.session.add(transaction)
+    db.session.commit()
+
+    send_investment_sale_email(user, asset_symbol, quantity, profit_loss)
+
+    return jsonify("Asset sale successful.")
 
 
 @account_bp.route('/assets', methods=['GET'])
