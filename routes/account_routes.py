@@ -267,7 +267,7 @@ def sell_asset():
 
     send_investment_sale_email(user, asset_symbol, quantity, profit_loss)
 
-    return jsonify("Asset sale successful.")
+    return jsonify("Asset sale successful."), 200
 
 
 @account_bp.route('/assets', methods=['GET'])
